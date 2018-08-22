@@ -20,13 +20,30 @@ const DateLine = styled.div`
   align-items: center;
 `;
 
+const Link = styled.span`
+  font-family: 'Marmelad';
+  cursor: pointer;
+  color: white;
+  margin: 0 8px;
+  border-bottom: ${({selected}) =>
+    selected ? '2px solid white' : 'none'};
+`;
+
+const Nav = styled.nav`
+  display: flex;
+  justify-content: center;
+  font-size: 25px;
+  padding: 40px 0 15px;
+`;
+
 
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      date: moment()
+      date: moment(),
+      navSelected: 'expanse'
     }
   }
 
@@ -42,8 +59,15 @@ class App extends Component {
     });
   }
 
+  handleNavClick = e => {
+    this.setState({
+      navSelected: e.target.getAttribute('name')
+    });
+  }
+
   render() {
-    const {date} = this.state;
+    const {date, navSelected} = this.state;
+    console.log(navSelected);
 
     return (
       <section>
@@ -55,6 +79,16 @@ class App extends Component {
             <DateButton onClick={this.handleAddDay}>+</DateButton>
           </DateLine>
         </header>
+        <main>
+          <Nav>
+            <Link name='expanse' onClick={this.handleNavClick} selected={navSelected === 'expanse'}>
+              Расходы сегодня
+            </Link>
+            <Link name='incomes' onClick={this.handleNavClick} selected={navSelected === 'incomes'}>
+              Доходы
+            </Link>
+          </Nav>
+        </main>
       </section>
     );
   }
