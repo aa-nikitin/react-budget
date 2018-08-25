@@ -62,9 +62,11 @@ export class Expanse extends Component {
     handleEnter = () => {
         const {onSubmit} = this.props;
         const {transaction, category} = this.state;
-
-        onSubmit(-1 * Math.abs(parseFloat(transaction)), category);
-        this.setState({transaction: null, category: null});
+        if(transaction > 0) {
+            onSubmit(-1 * Math.abs(parseFloat(transaction)), category);
+            this.setState({transaction: null, category: null});
+        }
+        
         //console.log(this.props);
     }
 

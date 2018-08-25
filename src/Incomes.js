@@ -62,9 +62,10 @@ export class Incomes extends Component {
     handleEnter = () => {
         const {onSubmit} = this.props;
         const {transaction, category} = this.state;
-
-        onSubmit(Math.abs(parseFloat(transaction)), category);
-        this.setState({transaction: null, category: null});
+        if(transaction > 0) {
+            onSubmit(Math.abs(parseFloat(transaction)), category);
+            this.setState({transaction: null, category: null});
+        }
         //console.log(this.props);
     }
 

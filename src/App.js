@@ -38,6 +38,13 @@ const Nav = styled.nav`
   padding: 40px 0 15px;
 `;
 
+const Table = styled.table`
+  width: 450px;
+  text-align: right;
+  padding-top: 30px;
+  margin: 0 auto;
+`;
+
 
 
 class App extends Component {
@@ -77,12 +84,14 @@ class App extends Component {
     }
     const newTransactions = [...transactions, newTransaction];
 
-    const aDate = moment('26.08.2018', 'DD.MM.YYYY');
+    /*const aDate = moment('26.08.2018', 'DD.MM.YYYY');
     const bDate = moment(TodayDate.format('DD.MM.YYYY'), 'DD.MM.YYYY');
-    console.log(aDate.isAfter(bDate));
+    */
+
+
 
     newTransactions.sort((a, b) => {
-      console.log(a);
+      //console.log(a);
       const aDate = moment(a.date, 'DD.MM.YYYY');
       const bDate = moment(b.date, 'DD.MM.YYYY');
       return aDate.isAfter(bDate);
@@ -94,9 +103,31 @@ class App extends Component {
     });
   }
 
+  onToday = () => {
+    const {transactions, date} = this.state;
+
+    const currentMonthTransactions = transactions.filter(
+      ({date: transactionDate}) => 
+        moment(transactionDate, 'DD.MM.YYYY').isSame(date, 'month') && moment(transactionDate, 'DD.MM.YYYY').isBefore(date),
+    );
+
+    const dailyMoney =
+      currentMonthTransactions.reduce(
+        (acc, transaction) =>
+          transaction.sum > 0 ? transaction.sum + acc : acc,
+        0,
+      ) / (moment(date).daysInMonth() - moment(date).get('date') + 1);    
+
+    const expanseBeforeToday = currentMonthTransactions.reduce(
+      (acc, {sum}) => (sum < 0 ? acc + sum : acc),
+      0,
+    ) / (moment(date).daysInMonth() - moment(date).get('date') + 1);
+
+    return Math.floor(dailyMoney + expanseBeforeToday);
+  };
+
   render() {
     const {date, navSelected} = this.state;
-    console.log(this.state.transactions);
 
     return (
       <section>
@@ -107,6 +138,7 @@ class App extends Component {
             <p>{date.format('DD.MM.YYYY')}</p>
             <DateButton onClick={this.handleAddDay}>+</DateButton>
           </DateLine>
+          <p>На сегодня: {this.onToday()} рублей</p>
         </header>
         <main>
           <Nav>
@@ -122,6 +154,25 @@ class App extends Component {
           ) : (
             <Incomes onSubmit={this.handleSubmitTransaction} />
           )}
+
+          <Table>
+            <tbody>
+              {this.state.transactions
+                .filter(({date: transactionDate}) =>
+                  moment(transactionDate, 'DD.MM.YYYY').isSame(
+                    date,
+                    'month',
+                  ),
+                )
+                .map(({date, sum, category}, index) => (
+                  <tr key={index}>
+                    <td>{date}</td>
+                    <td>{sum} ₽</td>
+                    <td>{category}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </Table>
           
           
         </main>
