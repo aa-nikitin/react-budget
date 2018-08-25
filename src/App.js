@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import moment from 'moment';
 import styled from 'styled-components';
+import Expanse from './Expanse';
+import Incomes from './Incomes';
 
 const DateButton = styled.button`
   color: white;
@@ -43,7 +45,8 @@ class App extends Component {
     super(props);
     this.state = {
       date: moment(),
-      navSelected: 'expanse'
+      navSelected: 'expanse',
+      transactions: []
     }
   }
 
@@ -65,9 +68,35 @@ class App extends Component {
     });
   }
 
+  handleSubmitTransaction = (sum, category) => {
+    const {date: TodayDate, transactions} = this.state;
+    const newTransaction = {
+      date: TodayDate.format('DD.MM.YYYY'),
+      category,
+      sum
+    }
+    const newTransactions = [...transactions, newTransaction];
+
+    const aDate = moment('26.08.2018', 'DD.MM.YYYY');
+    const bDate = moment(TodayDate.format('DD.MM.YYYY'), 'DD.MM.YYYY');
+    console.log(aDate.isAfter(bDate));
+
+    newTransactions.sort((a, b) => {
+      console.log(a);
+      const aDate = moment(a.date, 'DD.MM.YYYY');
+      const bDate = moment(b.date, 'DD.MM.YYYY');
+      return aDate.isAfter(bDate);
+    });
+    //console.log(sum, category);
+    //console.log(newTransaction);
+    this.setState({
+      transactions: newTransactions
+    });
+  }
+
   render() {
     const {date, navSelected} = this.state;
-    console.log(navSelected);
+    console.log(this.state.transactions);
 
     return (
       <section>
@@ -88,6 +117,13 @@ class App extends Component {
               Доходы
             </Link>
           </Nav>
+          {navSelected === 'expanse' ? (
+            <Expanse onSubmit={this.handleSubmitTransaction}/>
+          ) : (
+            <Incomes onSubmit={this.handleSubmitTransaction} />
+          )}
+          
+          
         </main>
       </section>
     );
